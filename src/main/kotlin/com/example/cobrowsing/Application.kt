@@ -1,8 +1,8 @@
 package com.example.cobrowsing
 
-import io.ktor.server.application.*
-import com.example.cobrowsing.plugins.*
 import com.example.cobrowsing.extensions.applyConfig
+import com.example.cobrowsing.plugins.*
+import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.tomcat.*
 import kotlinx.coroutines.runBlocking
@@ -27,6 +27,7 @@ fun Application.module() {
     configureWebSockets()
     configureStatusPages()
     configureSwagger()
+    configureAuthentication()
     configureRouting()
     configureCORS()
     configureDatabase()

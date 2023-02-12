@@ -11,7 +11,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <main.class>io.ktor.server.tomcat.EngineMain</main.class>
-        <ktor_version>2.2.2</ktor_version>
+        <ktor_version>2.2.3</ktor_version>
         <kotlin.code.style>official</kotlin.code.style>
         <kotlin_version>1.8.0</kotlin_version>
         <logback_version>1.2.11</logback_version>
@@ -68,6 +68,11 @@
         <dependency>
             <groupId>io.ktor</groupId>
             <artifactId>ktor-server-websockets-jvm</artifactId>
+            <version>${ktor_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.ktor</groupId>
+            <artifactId>ktor-server-auth-jvm</artifactId>
             <version>${ktor_version}</version>
         </dependency>
         <dependency>

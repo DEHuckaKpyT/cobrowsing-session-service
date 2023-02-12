@@ -1,6 +1,5 @@
 package com.example.cobrowsing.plugins
 
-import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.cors.routing.*
 
@@ -12,21 +11,13 @@ import io.ktor.server.plugins.cors.routing.*
  * @author Denis Matytsin
  */
 fun Application.configureCORS() {
-//    install(CORS) {
-////        allowHost("0.0.0.0:8080")
-////        allowHeader(HttpHeaders.ContentType)
-//        this.anyHost()
-//        this.allowHeaders {
-//            true
-//        }
-//        allowOrigins {
-//            true
-//        }
-//        allowMethod(HttpMethod.Get)
-////        this.
-//    }
+    install(CORS) {
+        anyHost()
+        allowHeaders {
+            true
+        }
+        allowOrigins {
+            true
+        }
+    }
 }
-//
-//.allowedOrigins("*")
-//.allowCredentials(false).maxAge(3600)
-//.allowedMethods("GET", "POST", "OPTIONS");

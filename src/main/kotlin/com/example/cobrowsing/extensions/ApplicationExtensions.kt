@@ -1,6 +1,7 @@
 package com.example.cobrowsing.extensions
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import io.ktor.client.*
@@ -9,6 +10,7 @@ import io.ktor.client.engine.apache.*
 import io.ktor.client.request.*
 import io.ktor.server.config.*
 import io.ktor.server.engine.*
+import java.util.*
 
 
 /**
@@ -50,4 +52,6 @@ suspend fun ApplicationEngineEnvironmentBuilder.applyConfig(resourcePath: String
 //    }
 }
 
-val Any.mapper: ObjectMapper by lazy { ObjectMapper() }
+val mapper: ObjectMapper by lazy { jacksonObjectMapper() }
+
+fun String.toUUID(): UUID = UUID.fromString(this)
