@@ -77,61 +77,65 @@ fun Routing.configureWebSocketsRouting() = authenticate("bearer-auth", strategy 
         } catch (e: java.lang.Exception) {
             println(e.stackTraceToString())
         } finally {
+            map.remove(chatId)
             close(CloseReason(CloseReason.Codes.NORMAL, "finally closed"))
             println("Removing user!")
         }
     }
 
-    val connectionsMap = ConcurrentHashMap<UUID, DefaultWebSocketSession>()
-    webSocket("/sessions/{sessionId}/{role}") {
-        val sessionId = UUID.fromString(call.parameters["sessionId"]!!)
-        val role = call.parameters["role"]!!
+    webSocket("/sessions/{sessionId}") {
+        val sessionId = call.parameters["sessionId"]?.toUUID()
+            ?: throw BadRequestException("Не указан id сессии")
 
-        if (role == "operator") {
-            connectionsMap[sessionId] = this
-            try {
-                for (frame in incoming) {
-                    frame as? Frame.Text ?: continue
-                    val receivedText = frame.readText()
-                    send(receivedText)
-                }
-            } catch (e: ClosedReceiveChannelException) {
-                println("onClose ${closeReason.await()}")
-            } catch (e: Throwable) {
-                println("onError ${closeReason.await()}")
-            } finally {
-                println("Removing operator!")
-            }
+        suspend fun client(map: Map<UUID, WebSocketServerSession>, frame: Frame) {
+            if (frame !is Frame.Text) return
+
+            map[sessionId]?.send(frame)
+                ?: send("STOP")
+
+            sessionEventService.create(CreateSessionEventArgument(frame.readText()))
         }
 
-        if (role == "client") {
-            val operatorConnection = connectionsMap[sessionId]
-            try {
-                for (frame in incoming) {
-                    operatorConnection!!.send(frame)
+        suspend fun operator(map: Map<UUID, WebSocketServerSession>, frame: Frame) {
+            map[sessionId]?.send("START")
+        }
 
-                    frame as? Frame.Text ?: continue
-                    sessionEventService.create(CreateSessionEventArgument(frame.readText()))
-                }
-            } catch (e: ClosedReceiveChannelException) {
-                send("closing")
-                close(CloseReason(CloseReason.Codes.NORMAL, "qwe1"))
-                println(e.stackTraceToString())
-                println("onClose ${closeReason.await()}")
-            } catch (e: Throwable) {
-                send("closing")
-                close(CloseReason(CloseReason.Codes.NORMAL, "qwe2"))
-                println(e.stackTraceToString())
-                println("onError ${closeReason.await()}")
-            } catch (e: java.lang.Exception) {
-                send("closing")
-                close(CloseReason(CloseReason.Codes.NORMAL, "qwe3"))
-                println(e.stackTraceToString())
-            } finally {
-                send("closing")
-                close(CloseReason(CloseReason.Codes.NORMAL, "qwe4"))
-                println("Removing user!")
+        val (myEnd, otherEnd, execute) = call.principal<CustomUserPrincipal>()
+            ?.run {
+                operatorBySessionId[sessionId] = this@webSocket
+                Triple(
+                    operatorBySessionId,
+                    clientBySessionId,
+                    suspend() { frame: Frame -> operator(clientBySessionId, frame) })
+            } ?: kotlin.run {
+            clientBySessionId[sessionId] = this@webSocket
+            Triple(
+                clientBySessionId,
+                operatorBySessionId,
+                suspend() { frame: Frame -> client(operatorBySessionId, frame) })
+        }
+
+        try {
+            for (frame in incoming) {
+                execute(frame)
             }
+        } catch (e: ClosedReceiveChannelException) {
+            println(e.stackTraceToString())
+        } catch (e: Throwable) {
+            println(e.stackTraceToString())
+        } catch (e: java.lang.Exception) {
+            println(e.stackTraceToString())
+        } finally {
+            otherEnd[sessionId]?.send("STOP")
+            myEnd.remove(sessionId)
+
+            close(CloseReason(CloseReason.Codes.NORMAL, "finally closed"))
+            println("Removing user!")
         }
     }
+}
+
+
+suspend fun <T1> suspend(block: suspend (T1) -> Unit): suspend (T1) -> Unit {
+    return block
 }
