@@ -10,5 +10,7 @@ package com.example.cobrowsing.models.enums
 enum class MessageType {
     TEXT,
     SHARE_PAGE,
-    CONNECT_PAGE
+    CLOSE_CONNECT,
+    CONNECT_PAGE,
+    DISCONNECT_PAGE,
 }
