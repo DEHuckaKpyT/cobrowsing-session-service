@@ -1,12 +1,9 @@
 package com.example.cobrowsing.models
 
-import com.example.cobrowsing.models.Messages.defaultExpression
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
-import org.jetbrains.exposed.sql.javatime.CurrentDateTime
-import org.jetbrains.exposed.sql.javatime.datetime
 import java.util.*
 
 

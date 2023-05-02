@@ -1,13 +1,18 @@
 package com.example.cobrowsing.routes.chat
 
+import com.example.cobrowsing.converters.MessageConverter
 import com.example.cobrowsing.plugins.ValueDto
+import com.example.cobrowsing.routes.chatmessage.dto.MessageListDto
 import com.example.cobrowsing.service.chat.ChatService
+import com.example.cobrowsing.service.message.MessageService
 import com.papsign.ktor.openapigen.route.apiRouting
 import com.papsign.ktor.openapigen.route.info
+import com.papsign.ktor.openapigen.route.path.normal.get
 import com.papsign.ktor.openapigen.route.path.normal.post
 import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.route
 import io.ktor.server.routing.*
+import org.mapstruct.factory.Mappers
 import java.util.*
 
 
@@ -21,12 +26,22 @@ fun Routing.chatRouting() = apiRouting {
     route("/chats") {
 
         val chatService = ChatService()
+        val messageService = MessageService()
+        val messageConverter: MessageConverter = Mappers.getMapper(MessageConverter::class.java)
 
         route("/create").post<Unit, ValueDto<UUID>, Unit>(
             info("Создать чат")
         ) { _, _ ->
             chatService.create()
                 .let { ValueDto(it.id.value) }
+                .let { respond(it) }
+        }
+
+        route("last-messages").get<Unit, List<MessageListDto>>(
+            info("Последние сообщения для каждого чата")
+        ) {
+            messageService.lastMessagesByChat()
+                .let { messageConverter.toMessageListDto(it) }
                 .let { respond(it) }
         }
     }

@@ -8,6 +8,7 @@ import com.example.cobrowsing.plugins.read
 import com.example.cobrowsing.service.message.argument.CreateMessageArgument
 import com.example.cobrowsing.service.message.argument.SearchMessageArgument
 import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.sql.*
 
 
 /**
@@ -33,4 +34,31 @@ class MessageService {
             Messages.chatId eq argument.chatId
         }.toList()
     }
+
+    suspend fun lastMessagesByChat(): List<Message> = read {
+        val slice = Messages.slice(
+            customDistinctOn(Messages.chatId),
+            *(Messages.columns).toTypedArray()
+        ).selectAll().orderBy(Messages.chatId to SortOrder.ASC, Messages.createdDate to SortOrder.DESC)
+
+        Message.wrapRows(slice).toList()
+    }
 }
+
+fun customDistinctOn(vararg expressions: Expression<*>): CustomFunction<Boolean?> = customBooleanFunction(
+    functionName = "DISTINCT ON",
+    postfix = " TRUE",
+    params = expressions
+)
+
+fun customBooleanFunction(
+    functionName: String, postfix: String = "", vararg params: Expression<*>
+): CustomFunction<Boolean?> =
+    object : CustomFunction<Boolean?>(functionName, BooleanColumnType(), *params) {
+        override fun toQueryBuilder(queryBuilder: QueryBuilder) {
+            super.toQueryBuilder(queryBuilder)
+            if (postfix.isNotEmpty()) {
+                queryBuilder.append(postfix)
+            }
+        }
+    }

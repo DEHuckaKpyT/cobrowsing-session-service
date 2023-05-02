@@ -46,12 +46,12 @@ fun Routing.configureWebSocketsRouting() = authenticate("bearer-auth", strategy 
         val chatId = call.parameters["chatId"]?.toUUID()
             ?: throw BadRequestException("Не указан id чата")
 
-        val (userId, map) = call.principal<CustomUserPrincipal>()?.run {
+        val (userId, myEnd, otherEnd) = call.principal<CustomUserPrincipal>()?.run {
             operatorByChatId[chatId] = this@webSocket
-            id to clientByChatId
+            Triple(id, operatorByChatId, clientByChatId)
         } ?: kotlin.run {
             clientByChatId[chatId] = this@webSocket
-            null to operatorByChatId
+            Triple(null, clientByChatId, operatorByChatId)
         }
 
         suspend fun save(message: ReceivedMessageDto) {
@@ -66,7 +66,7 @@ fun Routing.configureWebSocketsRouting() = authenticate("bearer-auth", strategy 
 
                 val message = mapper.readValue<ReceivedMessageDto>(frame.data)
                 message.authorId = userId
-                map[chatId]?.sendSerialized(message)
+                otherEnd[chatId]?.sendSerialized(message)
 
                 save(message)
             }
@@ -77,7 +77,7 @@ fun Routing.configureWebSocketsRouting() = authenticate("bearer-auth", strategy 
         } catch (e: java.lang.Exception) {
             println(e.stackTraceToString())
         } finally {
-            map.remove(chatId)
+            myEnd.remove(chatId)
             close(CloseReason(CloseReason.Codes.NORMAL, "finally closed"))
             println("Removing user!")
         }
