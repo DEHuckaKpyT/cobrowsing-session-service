@@ -13,6 +13,7 @@ import java.util.*
  */
 data class MessageListDto(
 
+    val chatId: UUID,
     val text: String,
     val type: MessageType,
     val authorId: UUID?,

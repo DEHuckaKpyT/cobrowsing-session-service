@@ -3,12 +3,14 @@ package com.example.cobrowsing.service.message
 import com.example.cobrowsing.models.Chats
 import com.example.cobrowsing.models.Message
 import com.example.cobrowsing.models.Messages
+import com.example.cobrowsing.models.enums.MessageType.TEXT
 import com.example.cobrowsing.plugins.execute
 import com.example.cobrowsing.plugins.read
 import com.example.cobrowsing.service.message.argument.CreateMessageArgument
 import com.example.cobrowsing.service.message.argument.SearchMessageArgument
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 
 /**
@@ -39,7 +41,12 @@ class MessageService {
         val slice = Messages.slice(
             customDistinctOn(Messages.chatId),
             *(Messages.columns).toTypedArray()
-        ).selectAll().orderBy(Messages.chatId to SortOrder.ASC, Messages.createdDate to SortOrder.DESC)
+        ).select(
+            Messages.type.eq(TEXT)
+        ).orderBy(
+            Messages.chatId to SortOrder.ASC,
+            Messages.createdDate to SortOrder.DESC
+        )
 
         Message.wrapRows(slice).toList()
     }

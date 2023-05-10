@@ -6,6 +6,7 @@ import com.example.cobrowsing.routes.chatmessage.dto.MessageListDto
 import com.example.cobrowsing.routes.websockets.dto.ReceivedMessageDto
 import com.example.cobrowsing.service.message.argument.CreateMessageArgument
 import org.mapstruct.Mapper
+import org.mapstruct.Mapping
 import java.util.*
 
 
@@ -25,4 +26,7 @@ interface MessageConverter {
     fun toCreateMessageArgument(chatId: UUID, authorId: UUID?, dto: ReceivedMessageDto): CreateMessageArgument
 
     fun toMessageListDto(message: List<Message>): List<MessageListDto>
+
+    @Mapping(target = "chatId", source = "chatId.value")
+    fun toMessageListDto(message: Message): MessageListDto
 }
