@@ -6,6 +6,7 @@ import com.example.cobrowsing.extensions.mapper
 import com.example.cobrowsing.extensions.toUUID
 import com.example.cobrowsing.plugins.CustomUserPrincipal
 import com.example.cobrowsing.routes.websockets.dto.ReceivedMessageDto
+import com.example.cobrowsing.routes.websockets.dto.SessionCommandEvent
 import com.example.cobrowsing.service.message.MessageService
 import com.example.cobrowsing.service.session.SessionService
 import com.example.cobrowsing.service.sessionevent.SessionEventService
@@ -91,13 +92,15 @@ fun Routing.configureWebSocketsRouting() = authenticate("bearer-auth", strategy 
             if (frame !is Frame.Text) return
 
             map[sessionId]?.send(frame)
-                ?: send("STOP")
+                ?: sendSerialized(SessionCommandEvent.DISCONNECTED)
 
             sessionEventService.create(CreateSessionEventArgument(frame.readText()))
         }
 
         suspend fun operator(map: Map<UUID, WebSocketServerSession>, frame: Frame) {
-            map[sessionId]?.send("START")
+            if (frame !is Frame.Text) return
+
+            map[sessionId]?.send(frame.readText())
         }
 
         val (myEnd, otherEnd, execute) = call.principal<CustomUserPrincipal>()
@@ -126,7 +129,7 @@ fun Routing.configureWebSocketsRouting() = authenticate("bearer-auth", strategy 
         } catch (e: java.lang.Exception) {
             println(e.stackTraceToString())
         } finally {
-            otherEnd[sessionId]?.send("STOP")
+            otherEnd[sessionId]?.sendSerialized(SessionCommandEvent.DISCONNECTED)
             myEnd.remove(sessionId)
 
             close(CloseReason(CloseReason.Codes.NORMAL, "finally closed"))

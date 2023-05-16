@@ -13,4 +13,5 @@ enum class MessageType {
     CLOSE_CONNECT,
     CONNECT_PAGE,
     DISCONNECT_PAGE,
+    CONNECTION_CLOSED,
 }
