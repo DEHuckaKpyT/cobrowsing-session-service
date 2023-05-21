@@ -4,6 +4,7 @@ import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
+import org.jetbrains.exposed.sql.Op.FALSE
 import org.jetbrains.exposed.sql.javatime.CurrentDateTime
 import org.jetbrains.exposed.sql.javatime.datetime
 import java.util.*
@@ -18,6 +19,7 @@ import java.util.*
 object Chats : UUIDTable("chat") {
 
     val createdDate = datetime("created_date").defaultExpression(CurrentDateTime)
+    val sharingAccepted = bool("sharing_accepted").defaultExpression(FALSE)
 }
 
 class Chat(id: EntityID<UUID>) : UUIDEntity(id) {
@@ -25,6 +27,7 @@ class Chat(id: EntityID<UUID>) : UUIDEntity(id) {
 
 
     val createdDate by Chats.createdDate
+    var sharingAccepted by Chats.sharingAccepted
     val messages by Message referrersOn Messages.chatId
     val sessions by Session referrersOn Sessions.chatId
 }

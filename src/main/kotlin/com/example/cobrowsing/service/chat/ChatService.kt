@@ -2,6 +2,8 @@ package com.example.cobrowsing.service.chat
 
 import com.example.cobrowsing.models.Chat
 import com.example.cobrowsing.plugins.execute
+import com.example.cobrowsing.plugins.read
+import java.util.*
 
 
 /**
@@ -15,5 +17,13 @@ class ChatService {
     suspend fun create(): Chat = execute {
         Chat.new {
         }
+    }
+
+    suspend fun isSharingAccepted(chatId: UUID): Boolean = read {
+        Chat[chatId].sharingAccepted
+    }
+
+    suspend fun acceptSharing(chatId: UUID) = execute {
+        Chat[chatId].sharingAccepted = true
     }
 }
