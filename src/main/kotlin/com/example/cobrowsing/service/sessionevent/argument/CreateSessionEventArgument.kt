@@ -1,5 +1,7 @@
 package com.example.cobrowsing.service.sessionevent.argument
 
+import java.util.*
+
 
 /**
  * Created on 27.01.2023.
@@ -9,5 +11,6 @@ package com.example.cobrowsing.service.sessionevent.argument
  */
 data class CreateSessionEventArgument(
 
+    val sessionId: UUID,
     val content: String,
 )

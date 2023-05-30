@@ -4,6 +4,7 @@ import com.example.cobrowsing.models.Chat
 import com.example.cobrowsing.models.Session
 import com.example.cobrowsing.plugins.execute
 import com.example.cobrowsing.service.session.argument.CreateSessionArgument
+import java.util.*
 
 
 /**
@@ -16,8 +17,13 @@ class SessionService {
 
     suspend fun create(argument: CreateSessionArgument): Session = execute {
         Session.new {
-//            chatId = EntityID(argument.chatId, Chats)
             chat = Chat[argument.chatId]
+        }
+    }
+
+    suspend fun finish(id: UUID): Session = execute {
+        Session[id].apply {
+            finished = true
         }
     }
 }

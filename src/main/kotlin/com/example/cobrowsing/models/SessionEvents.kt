@@ -16,11 +16,15 @@ import java.util.*
 
 object SessionEvents : UUIDTable("session_event") {
 
+    val sessionId = reference("session_id", Sessions)
     val content = text("content")
 }
 
 class SessionEvent(id: EntityID<UUID>) : UUIDEntity(id) {
     companion object : UUIDEntityClass<SessionEvent>(SessionEvents)
 
+    var sessionId by SessionEvents.sessionId
     var content by SessionEvents.content
+
+    val session by Session referencedOn SessionEvents.sessionId
 }

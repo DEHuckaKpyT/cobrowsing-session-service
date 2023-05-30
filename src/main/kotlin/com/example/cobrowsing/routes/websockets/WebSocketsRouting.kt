@@ -94,7 +94,7 @@ fun Routing.configureWebSocketsRouting() = authenticate("bearer-auth", strategy 
             map[sessionId]?.send(frame)
                 ?: sendSerialized(SessionCommandEvent.DISCONNECTED)
 
-            sessionEventService.create(CreateSessionEventArgument(frame.readText()))
+            sessionEventService.create(CreateSessionEventArgument(sessionId, frame.readText()))
         }
 
         suspend fun operator(map: Map<UUID, WebSocketServerSession>, frame: Frame) {

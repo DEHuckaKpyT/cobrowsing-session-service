@@ -10,7 +10,7 @@ import java.util.*
  *
  * @author Denis Matytsin
  */
-@Request("dsad")
+@Request("Создание сессии")
 data class CreateSessionDto(
 
     val chatId: UUID

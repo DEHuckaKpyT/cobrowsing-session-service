@@ -12,5 +12,5 @@ import java.util.*
  */
 data class SessionEventListParams(
 
-    @QueryParam("Идентификатор сессии") val sessionId: UUID?
+    @QueryParam("Идентификатор сессии") val sessionId: UUID
 )
