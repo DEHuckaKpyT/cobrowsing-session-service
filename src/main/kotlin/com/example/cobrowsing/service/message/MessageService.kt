@@ -49,6 +49,9 @@ class MessageService {
         )
 
         Message.wrapRows(slice).toList()
+            .sortedByDescending {
+                it.createdDate
+            }
     }
 }
 

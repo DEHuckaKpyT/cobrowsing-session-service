@@ -29,7 +29,7 @@ fun Application.configureSwagger() {
         }
         // describe the server, add as many as you want
         server("http://localhost:8080/") {
-            description = "Test server"
+            description = "cobrowsing-service"
         }
     }
     routing {
