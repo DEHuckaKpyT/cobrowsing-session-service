@@ -260,7 +260,7 @@ function createInfoMessage(message) {
         notification.className = "notification-text"
         notification.innerText =
             div.innerHTML = `<b><u class="notification-text">Доступ к просмотру страницы был закрыт\n
-        <a href="http://${host}/replayer?sessionId=${message.text}">Посмотреть запись</a></u></b>`
+        <a href="http://${host}/replayer?sessionId=${message.text}" target="_blank">Посмотреть запись</a></u></b>`
     }
 
     return div
@@ -372,12 +372,6 @@ const styles = `
     --chat-message-width: 275px;
 }
 
-
-body {
-    font-family: "Times New Roman", Times, serif;
-    font-size: 16px;
-}
-
 #chat-open-button {
     position: fixed;
     right: 0;
@@ -452,6 +446,8 @@ body {
     width: var(--chat-rectangle-width);
     border: 2px solid rgb(174, 174, 255);
     border-radius: 10px 10px 0px 0px;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 16px;
 }
 
 #chats-list-header {
