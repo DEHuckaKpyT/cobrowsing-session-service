@@ -14,8 +14,8 @@ import java.time.Duration
  */
 fun Application.configureWebSockets() {
     install(WebSockets) {
-        pingPeriod = Duration.ofSeconds(300)
-        timeout = Duration.ofSeconds(300)
+        pingPeriod = Duration.ofDays(1)
+        timeout = Duration.ofDays(1)
         maxFrameSize = Long.MAX_VALUE
         masking = false
         contentConverter = JacksonWebsocketContentConverter()
