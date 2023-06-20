@@ -260,7 +260,7 @@ function createInfoMessage(message) {
         notification.className = "notification-text"
         notification.innerText =
             div.innerHTML = `<b><u class="notification-text">Доступ к просмотру страницы был закрыт\n
-        <a href="http://${host}/replayer?sessionId=${message.text}" target="_blank">Посмотреть запись</a></u></b>`
+        <a href="http://${host}/replayer?sessionId=${escapeHtml(message.text)}" target="_blank">Посмотреть запись</a></u></b>`
     }
 
     return div
@@ -327,7 +327,7 @@ function createLeftTextMessage(text) {
 function createErrorMessage(error) {
     const div = document.createElement("div")
     div.className = "container-message-red"
-    div.innerHTML = `<b><u class="notification-text">${error}</u></b>`
+    div.innerHTML = `<b><u class="notification-text">${escapeHtml(error)}</u></b>`
 
     return div
 }
@@ -835,4 +835,12 @@ function syncRequest(method, uri) {
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function escapeHtml(unsafe) {
+    return unsafe.replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
 }
