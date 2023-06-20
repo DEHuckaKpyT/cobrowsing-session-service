@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 async function loadOpenChatsListButton() {
     const openChatButton = document.createElement("div")
     openChatButton.id = "chat-open-button"
-    openChatButton.innerText = "Чаты с пользователями"
+    openChatButton.innerText = "Чаты с клиентами"
 
     document.body.appendChild(openChatButton)
 
